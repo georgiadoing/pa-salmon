@@ -1,4 +1,15 @@
 #!/bin/bash -l
+
+################################################################################
+#Script Name: salmon_metals_spu_decoy.script
+#Desription : run salmon on sputum +/- metals RNA-seq with decoy-away t index
+#Args       :
+#Author     : Georgia Doing
+#Date       : 10-09-21
+#Email      : Georgia.Doing.GR@Dartmouth.edu
+################################################################################
+
+
 #SBATCH --partition=standard
 #SBATCH --account NCCC
 #SBATCH --job-name salmon.metspu
@@ -9,35 +20,39 @@
 #SBATCH --array=0-1
 
 cd ~/salmon
-
-conda activate salmon
-
-
+# note the switch to conda environment 'salmon2' from 'salmon'
+conda activate salmon2
+# read directory names of folders containing fastq files per sample
+# (this is useful for when samples have more than one fastq eg paired-end)
 samparr=(/dartfs-hpc/rc/lab/H/HoganD/RNASeq_data/Sputum_Metals_RNAseq/*)
-
+# for record keeping, I echo things so they end up in the slurm job 'out' file
 echo "sample 1: ${samparr[1]}"
 echo "sample 2: ${samparr[2]}"
-
 echo "task id: $SLURM_ARRAY_TASK_ID"
-
+# submit the processing of each sample as a job in a job array
+# (keep track of samples by the name of their directory)
 samp="${samparr[$SLURM_ARRAY_TASK_ID]}"
-
 echo "samp: $samp"
-
+# read the fastq files from the folder for the current job/sample dir
 fqtemp=($samp/*)
 echo "fq temp: ${fqtemp[*]}"
-
+# parse the name of the fastq file to save the output with other extension
 base=`basename ${fqtemp[1]} .fastq.gz`
 echo "base: $base"
+# run the salmon quant command
+# note the t index pao1_cdna_k15 has been previous made
 salmon quant -i ~/pa-seq-compendia/t_indxs/pao1_cdna_k15 \
+    # for P. aeruginosa, only map in 'unpaired' mode, (for others use -l A)
     -l U \
+    # include all fastq files for this sample as a list
     -r ${fqtemp[*]} \
+    # this output path is in the hogan lab folder on dartfs
     -o /dartfs-hpc/rc/lab/H/HoganD/RNASeq_data/Sputum_Metals_RNAseq/salmon_out/$base.salmon \
+    # the following options are what I chose for P. aeruginosa, may change
     --useVBOpt \
     --seqBias \
     --validateMappings \
     --posBias \
     --numBootstraps 30 \
+    # allow 6 threads for zippity-quick speed, havent tried more..
     -p 6
-
-
