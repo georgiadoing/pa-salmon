@@ -1,7 +1,7 @@
 #!/bin/bash -l
 
 ################################################################################
-#Script Name: salmon_metals_spu_decoy.script
+#Script Name: salmon_metals_spu.script
 #Desription : run salmon on sputum +/- metals RNA-seq with decoy-away t index
 #Args       :
 #Author     : Georgia Doing

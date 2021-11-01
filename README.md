@@ -10,7 +10,7 @@ Using salmon to processes *P. aeruginosa* RNA-seq data
     * conda activate salmon2
     * conda install -c bioconda salmon
     * (https://anaconda.org/bioconda/salmon)
-    
+
 2. Create transcriptome index
     These are reference genome specific and can be made in decoy-unaware or
     decoy-aware modes
@@ -31,9 +31,9 @@ Using salmon to processes *P. aeruginosa* RNA-seq data
     * examples: salmon_metals_spu.scipt, salmon_metals_spu_decoy.script
 
 5. Collect salmon output (quant.fs files) into count table
-    * Since the salmon calls save all outputs to files named quant.fs in different
-    directories, and
-    * salmon also uses cDNA gene identifiers,
+    * the salmon calls save all outputs to files named quant.fs in different
+    directories
+    * almon also uses cDNA gene identifiers
     * collect them all as columns
     in a table with column names as sample names and rownames as gene names
     * example: spu_collect.script
