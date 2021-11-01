@@ -1,0 +1,43 @@
+#!/bin/bash -l
+#SBATCH --partition=standard
+#SBATCH --account NCCC
+#SBATCH --job-name salmon.metspu
+#SBATCH --time=03:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=6
+#SBATCH --mail-user=Georgia.Doing.GR@Dartmouth.edu
+#SBATCH --array=0-1
+
+cd ~/salmon
+
+conda activate salmon
+
+
+samparr=(/dartfs-hpc/rc/lab/H/HoganD/RNASeq_data/Sputum_Metals_RNAseq/*)
+
+echo "sample 1: ${samparr[1]}"
+echo "sample 2: ${samparr[2]}"
+
+echo "task id: $SLURM_ARRAY_TASK_ID"
+
+samp="${samparr[$SLURM_ARRAY_TASK_ID]}"
+
+echo "samp: $samp"
+
+fqtemp=($samp/*)
+echo "fq temp: ${fqtemp[*]}"
+
+base=`basename ${fqtemp[1]} .fastq.gz`
+echo "base: $base"
+salmon quant -i ~/pa-seq-compendia/t_indxs/pao1_cdna_k15 \
+    -l U \
+    -r ${fqtemp[*]} \
+    -o /dartfs-hpc/rc/lab/H/HoganD/RNASeq_data/Sputum_Metals_RNAseq/salmon_out/$base.salmon \
+    --useVBOpt \
+    --seqBias \
+    --validateMappings \
+    --posBias \
+    --numBootstraps 30 \
+    -p 6
+
+

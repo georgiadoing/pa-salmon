@@ -1,0 +1,72 @@
+#!/bin/bash -l
+
+################################################################################
+#Script Name: salmon_ti.pbs
+#Desription : create transcriptome indices from cdna fasta
+#Args       : None 
+#Author     : Georgia Doing
+#Date       : 12-18-20
+#Email      : Georgia.Doing.GR@Dartmouth.edu
+################################################################################
+
+#SBATCH --job-name=sal_d_indx
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=12
+#SBATCH --time=03:00:00
+#SBATCH --mail-user=georgia.doing.gr@dartmouth.edu
+#SBATCH --mail-type=BEGIN,END,FAIL
+##SBATCH --partition bigmem
+#SBATCH --mem=128G
+
+cd /dartfs-hpc/scratch/f002bx6/salmon
+
+conda activate salmon2
+
+#salmon index -t ../t_indxs/pao1_cdna.fa.gz -i ..//t_indxs/pao1_cdna_k15 -k 15
+#salmon index -t ../t_indxs/pa14_cdna.fa.gz -i ../t_indxs/pa14_cdna_k15 -k 15
+
+#wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Pseudomonas_aeruginosa/reference/GCA_000006765.1_ASM676v1/GCA_000006765.1_ASM676v1_cds_from_genomic.fna.gz -O Pa_PAO1_cdna.fna.gz
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Pseudomonas_aeruginosa/reference/GCA_000006765.1_ASM676v1/GCA_000006765.1_ASM676v1_genomic.fna.gz -O Pa_PAO1_genome.fna.gz
+
+#wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Staphylococcus_aureus/reference/GCA_000013425.1_ASM1342v1/GCA_000013425.1_ASM1342v1_rna_from_genomic.fna.gz -O /dartfs-hpc/scratch/f002bx6/salmon/Sa_NCTC8325_rna.fna.gz
+
+#wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Staphylococcus_aureus/reference/GCA_000013425.1_ASM1342v1/GCA_000013425.1_ASM1342v1_genomic.fna.gz -O Sa_NCTC8325_genome.fna.gz
+
+#wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/Candida_albicans/representative/GCA_000182965.3_ASM18296v3/GCA_000182965.3_ASM18296v3_genomic.fna.gz -O Ca_SC5314_genome.fna.gz
+
+#wget http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/GRCh38.p13.genome.fa.gz -O Human_GRCh38_genome.fa.gz
+
+#wget http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.transcripts.fa.gz -O Human_GRCh38_transcripts.fa.gz
+
+grep "^>" <(gunzip -c Pa_PAO1_genome.fna.gz) | cut -d " " -f 1 > Pa_decoys.txt
+sed -i.bak -e 's/>//g' Pa_decoys.txt
+
+#grep "^>" <(gunzip -c Sa_NCTC8325_genome.fna.gz) | cut -d " " -f 1 > Sa_decoys.txt
+#sed -i.bak -e 's/>//g' Sa_decoys.txt
+
+#grep "^>" <(gunzip -c Ca_SC5314_genome.fna.gz) | cut -d " " -f 1 > Ca_decoys.txt
+#sed -i.bak -e 's/>//g' Ca_decoys.txt
+
+#grep "^>" <(gunzip -c Human_GRCh38_genome.fa.gz) | cut -d " " -f 1 > Hs_decoys.txt
+#sed -i.bak -e 's/>//g' Hs_decoys.txt
+
+
+#cat Sa_decoys.txt Ca_decoys.txt Hs_decoys.txt > all_decoys.txt
+cat Sa_decoys.txt Ca_decoys.txt Hs_decoys.txt Pa_deocys.txt > all_decoys2.txt
+
+#cat Pa_PAO1_cdna.fna.gz Sa_NCTC8325_genome.fna.gz Ca_SC5314_genome.fna.gz Human_GRCh38_genome.fa.gz > gentrome.fa.gz
+
+cat Human_GRCh38_transcripts.fa.gz Pa_PAO1_cdna.fna.gz Sa_NCTC8325_genome.fna.gz Ca_SC5314_genome.fna.gz Human_GRCh38_genome.fa.gz > gentrome2.fa.gz
+#cat Pa_PAO1_cdna_fna.gz Human_GRCh38_genome.fa.gz > gentrome.fa.gz
+#salmon index -t gentrome.fa.gz -d all_decoys.txt -p 12 -k 15 -i pao1_index_wdecss 
+
+#salmon index -t /dartfs-hpc/scratch/f002bx6/salmon/Sa_NCTC8325_rna.fna.gz -k 15 -i /dartfs-hpc/scratch/f002bx6/salmon/sa_index_nd
+#salmon index -t /dartfs-hpc/scratch/f002bx6/salmon/Ca_SC5314_genome.fna.gz -k 15 -i /dartfs-hpc/scratch/f002bx6/salmon/ca_index_nd
+
+salmon index -t gentrome2.fa.gz -d all_decoys2.txt -p 12 -i human_index_wdec
+
+
+
+
+

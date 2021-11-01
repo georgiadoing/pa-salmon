@@ -1,0 +1,36 @@
+#!/bin/bash -l
+
+################################################################################
+#Script Name: salmon_ti.pbs
+#Desription : create transcriptome indices from cdna fasta
+#Args       : None 
+#Author     : Georgia Doing
+#Date       : 12-18-20
+#Email      : Georgia.Doing.GR@Dartmouth.edu
+################################################################################
+
+#SBATCH --job-name=sal_t_index
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=00:15:00
+#SBATCH --mail-user=georgia.doing.gr@dartmouth.edu
+#SBATCH --mailt-type=BEGIN,END,FAIL
+
+
+cd ~/salmon
+
+conda activate salmon
+
+#salmon index -t ../t_indxs/pao1_cdna.fa.gz -i ..//t_indxs/pao1_cdna_k15 -k 15
+#salmon index -t ../t_indxs/pa14_cdna.fa.gz -i ../t_indxs/pa14_cdna_k15 -k 15
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Pseudomonas_aeruginosa/reference/GCA_000006765.1_ASM676v1/GCA_000006765.1_ASM676v1_cds_from_genomic.fna.gz -O Pa_PAO1_cdna.fna.gz
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Pseudomonas_aeruginosa/reference/GCA_000006765.1_ASM676v1/GCA_000006765.1_ASM676v1_genomic.fna.gz -O Pa_PAO1_genome.fna.gz
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria/Staphylococcus_aureus/reference/GCA_000013425.1_ASM1342v1/GCA_000013425.1_ASM1342v1_genomic.fna.gz -O Sa_NCTC8325_genome.fna.gz
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/fungi/Candida_albicans/representative/GCA_000182965.3_ASM18296v3/GCA_000182965.3_ASM18296v3_genomic.fna.gz -O Ca_SC5314_genome.fna.gz
+
+wget http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/GRCh38.p13.genome.fa.gz -O Human_GRCh38_genome.fa.gz
+
